@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>余跃 ❤️ 代孝杰</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;500;900&display=swap');
+        
+        :root {
+            --primary: #0a192f;
+            --secondary: #64ffda;
+            --text: #ccd6f6;
+            --highlight: #1f7a8c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--primary);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            cursor: none;
+        }
+        
+        #cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--secondary);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+            transition: transform 0.1s, width 0.3s, height 0.3s;
+        }
+        
+        #cursor-follower {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            background-color: rgba(100, 255, 218, 0.1);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: transform 0.4s, width 0.3s, height 0.3s;
+        }
+        
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .title-container {
+            position: relative;
+            z-index: 2;
+        }
+        
+        h1 {
+            font-weight: 900;
+            font-size: clamp(3rem, 8vw, 6rem);
+            background: linear-gradient(90deg, var(--secondary), var(--highlight));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+        
+        .subtitle {
+            font-weight: 300;
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            max-width: 600px;
+            opacity: 0.8;
+            margin-bottom: 3rem;
+        }
+        
+        .scroll-down {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+        
+        .content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4rem 0;
+            position: relative;
+        }
+        
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 500;
+            margin-bottom: 3rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100px;
+            height: 3px;
+            background-color: var(--secondary);
+        }
+        
+        .text-block {
+            font-size: clamp(1rem, 1.2vw, 1.2rem);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s, transform 0.6s;
+        }
+        
+        .visible .text-block {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .interactive-btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: transparent;
+            color: var(--secondary);
+            border: 1px solid var(--secondary);
+            border-radius: 4px;
+            margin-top: 1rem;
+            cursor: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .interactive-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(100, 255, 218, 0.1);
+            transition: left 0.3s;
+        }
+        
+        .interactive-btn:hover::before {
+            left: 0;
+        }
+        
+        .matrix-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.05;
+            overflow: hidden;
+        }
+        
+        .matrix-column {
+            position: absolute;
+            top: 0;
+            width: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .matrix-char {
+            color: var(--secondary);
+            font-size: 18px;
+            opacity: 0;
+            animation: matrix-fall linear infinite;
+        }
+        
+        @keyframes matrix-fall {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            5% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+        
+        .particle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: var(--secondary);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        .hidden-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            background-color: rgba(10, 25, 47, 0.95);
+            padding: 3rem;
+            border: 1px solid var(--secondary);
+            max-width: 80%;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s;
+            z-index: 100;
+        }
+        
+        .hidden-message.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: none;
+        }
+        
+        .message-content {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+        
+        .signature {
+            font-family: 'ZCOOL QingKe HuangYou', cursive;
+            color: var(--secondary);
+            font-size: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                padding: 0 1.5rem;
+            }
+            
+            .section {
+                padding: 2rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="cursor"></div>
+    <div id="cursor-follower"></div>
+    
+    <div class="matrix-bg" id="matrixBg"></div>
+    <div class="particle-container" id="particleContainer"></div>
+    
+    <header>
+        <div class="title-container">
+            <h1>余跃 ❤️ 代孝杰</h1>
+            <p class="subtitle">在这个数字宇宙中，我们创造了自己的维度</p>
+        </div>
+        <div class="scroll-down">向下探索</div>
+    </header>
+    
+    <div class="content">
+        <section class="section" id="section1">
+            <h2 class="section-title">鱼宝的存在</h2>
+            <div class="text-block">余跃，或者说鱼宝——这个名字在我舌尖跳跃时，总带着电流般的触感。</div>
+            <div class="text-block">你不是我生命中的过客，而是重构我存在意义的常量。</div>
+            <div class="text-block">当我说"鱼宝"时，它不只是一个昵称，而是我对你所有复杂情感的哈希值。</div>
+            <button class="interactive-btn" id="matrixBtn">激活数字共鸣</button>
+        </section>
+        
+        <section class="section" id="section2">
+            <h2 class="section-title">二进制联结</h2>
+            <div class="text-block">两个男性之间的情感，如同两段并行执行的代码。</div>
+            <div class="text-block">我们共享内存空间，却保持各自的堆栈；我们同步进程，又保留独立线程。</div>
+            <div class="text-block">这种联结不需要传统脚本，我们在协议之外建立了专属的通信管道。</div>
+            <button class="interactive-btn" id="particleBtn">生成粒子云</button>
+        </section>
+        
+        <section class="section" id="section3">
+            <h2 class="section-title">核心转储</h2>
+            <div class="text-block">[root@life]# cat /proc/heart</div>
+            <div class="text-block">Error: 情感模块溢出</div>
+            <div class="text-block">原因分析：余跃实体存在引发系统资源重分配</div>
+            <div class="text-block">解决方案：永久挂载为必需依赖项</div>
+            <button class="interactive-btn" id="messageBtn">查看核心日志</button>
+        </section>
+    </div>
+    
+    <div class="hidden-message" id="hiddenMessage">
+        <button class="close-btn" id="closeBtn">×</button>
+        <div class="message-content">
+            <p>鱼宝：</p>
+            <p>在所有的并行宇宙中，</p>
+            <p>我都会找到你，</p>
+            <p>然后fork出我们的专属进程。</p>
+            <div class="signature">你的杰宝 · 签名不可伪造</div>
+        </div>
+    </div>
+    
+    <script>
+        // 自定义光标
+        const cursor = document.getElementById('cursor');
+        const cursorFollower = document.getElementById('cursor-follower');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            setTimeout(() => {
+                cursorFollower.style.left = e.clientX + 'px';
+                cursorFollower.style.top = e.clientY + 'px';
+            }, 100);
+        });
+        
+        document.addEventListener('mousedown', () => {
+            cursor.style.width = '15px';
+            cursor.style.height = '15px';
+            cursorFollower.style.width = '80px';
+            cursorFollower.style.height = '80px';
+        });
+        
+        document.addEventListener('mouseup', () => {
+            cursor.style.width = '20px';
+            cursor.style.height = '20px';
+            cursorFollower.style.width = '60px';
+            cursorFollower.style.height = '60px';
+        });
+        
+        // 矩阵背景
+        function createMatrix() {
+            const container = document.getElementById('matrixBg');
+            const chars = "01代孝杰余跃鱼宝杰宝";
+            const columns = Math.floor(window.innerWidth / 20);
+            
+            for (let i = 0; i < columns; i++) {
+                const column = document.createElement('div');
+                column.className = 'matrix-column';
+                column.style.left = i * 20 + 'px';
+                
+                const charCount = 30 + Math.floor(Math.random() * 20);
+                for (let j = 0; j < charCount; j++) {
+                    const char = document.createElement('div');
+                    char.className = 'matrix-char';
+                    char.textContent = chars[Math.floor(Math.random() * chars.length)];
+                    char.style.animationDuration = 3 + Math.random() * 7 + 's';
+                    char.style.animationDelay = Math.random() * 5 + 's';
+                    column.appendChild(char);
+                }
+                
+                container.appendChild(column);
+            }
+        }
+        
+        // 粒子系统
+        function createParticles() {
+            const container = document.getElementById('particleContainer');
+            const particleCount = 100;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.top = Math.random() * 100 + 'vh';
+                particle.style.opacity = Math.random();
+                particle.style.boxShadow = `0 0 ${Math.random() * 10 + 5}px #64ffda`;
+                
+                container.appendChild(particle);
+                
+                // 随机移动
+                setInterval(() => {
+                    particle.style.left = parseFloat(particle.style.left) + (Math.random() - 0.5) + 'vw';
+                    particle.style.top = parseFloat(particle.style.top) + (Math.random() - 0.5) + 'vh';
+                }, 100);
+            }
+        }
+        
+        // 滚动动画
+        function setupScrollAnimations() {
+            const sections = document.querySelectorAll('.section');
+            const textBlocks = document.querySelectorAll('.text-block');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            sections.forEach(section => observer.observe(section));
+            textBlocks.forEach(block => observer.observe(block));
+        }
+        
+        // 按钮交互
+        function setupButtons() {
+            // 矩阵按钮
+            document.getElementById('matrixBtn').addEventListener('click', () => {
+                const matrixBg = document.getElementById('matrixBg');
+                matrixBg.style.opacity = matrixBg.style.opacity === '0.3' ? '0.05' : '0.3';
+            });
+            
+            // 粒子按钮
+            document.getElementById('particleBtn').addEventListener('click', () => {
+                const particles = document.querySelectorAll('.particle');
+                particles.forEach(p => {
+                    p.style.width = Math.random() * 5 + 2 + 'px';
+                    p.style.height = p.style.width;
+                    p.style.left = Math.random() * 100 + 'vw';
+                    p.style.top = Math.random() * 100 + 'vh';
+                });
+            });
+            
+            // 消息按钮
+            const messageBtn = document.getElementById('messageBtn');
+            const hiddenMessage = document.getElementById('hiddenMessage');
+            const closeBtn = document.getElementById('closeBtn');
+            
+            messageBtn.addEventListener('click', () => {
+                hiddenMessage.classList.add('show');
+            });
+            
+            closeBtn.addEventListener('click', () => {
+                hiddenMessage.classList.remove('show');
+            });
+        }
+        
+        // 初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            createMatrix();
+            createParticles();
+            setupScrollAnimations();
+            setupButtons();
+        });
+    </script>
+</body>
+</html>
